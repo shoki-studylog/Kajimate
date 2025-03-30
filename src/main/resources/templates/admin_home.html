@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Admin Home</title>
+</head>
+
+<body>
+    <h1>管理者ページ</h1>
+    <p>このページは管理者のみが閲覧できます。</p>
+
+    <h2>ユーザー一覧</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ユーザー名</th>
+                <th>メールアドレス</th>
+                <th>役割</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.role}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>タスク一覧</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>タイトル</th>
+                <th>ステータス</th>
+                <th>締切日</th>
+                <th>担当者</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.id}"></td>
+                <td th:text="${task.title}"></td>
+                <td th:text="${task.status}"></td>
+                <td th:text="${task.endDate}"></td>
+                <td th:text="${task.user.username}"></td>
+            </tr>
+        </tbody>
+</body>
+
+</html>

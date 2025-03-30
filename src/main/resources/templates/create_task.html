@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="/home" method="post" th:object="${newTask}">
+        <label>タイトル: <input type="text" th:field="*{title}" /></label><br />
+        <label>説明文: <input type="text" th:field="*{description}" /></label><br />
+        <label>リマインド日時: <input type="datetime-local" th:field="*{remindTime}" /></label><br />
+        <label>締切日: <input type="date" th:field="*{endDate}" /></label><br />
+        <label>担当者:
+            <select th:field="*{user}">
+                <option value="" disabled selected>選択してください</option>
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}">
+                </option>
+            </select>
+        </label><br />
+        <button type="submit">登録</button>
+    </form>
+</body>
+
+</html>

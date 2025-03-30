@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>タスク一覧</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="task_list">
+            <div class="todays_task">
+                <h1>今日のタスク一覧</h1>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>タイトル</th>
+                            <th>ステータス</th>
+                            <th>締切日</th>
+                            <th>担当者</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="todaysTask : ${todaysTasks}">
+                            <td th:text="${todaysTask.id}"></td>
+                            <td th:text="${todaysTask.title}"></td>
+                            <td th:text="${todaysTask.status}"></td>
+                            <td th:text="${todaysTask.endDate}"></td>
+                            <td th:text="${todaysTask.user.username}"></td>
+                            <td>
+                                <a th:href="@{/tasks/edit/{id}(id=${todaysTask.id})}">編集</a>
+                            </td>
+                            <td>
+                                <a th:href="@{/tasks/delete/{id}(id=${todaysTask.id})}"
+                                    onclick="return confirm('本当に削除しますか？');">削除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="after_task">
+                <h1>期限切れのタスク一覧</h1>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>タイトル</th>
+                            <th>ステータス</th>
+                            <th>締切日</th>
+                            <th>担当者</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="OverdueTask : ${OverdueTasks}">
+                            <td th:text="${OverdueTask.id}"></td>
+                            <td th:text="${OverdueTask.title}"></td>
+                            <td th:text="${OverdueTask.status}"></td>
+                            <td th:text="${OverdueTask.endDate}"></td>
+                            <td th:text="${OverdueTask.user.username}"></td>
+                            <td>
+                                <a th:href="@{/tasks/edit/{id}(id=${OverdueTask.id})}">編集</a>
+                            </td>
+                            <td>
+                                <a th:href="@{/tasks/delete/{id}(id=${OverdueTask.id})}"
+                                    onclick="return confirm('本当に削除しますか？');">削除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="calender_task">
+            <h1>タスク一覧</h1>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>タイトル</th>
+                        <th>ステータス</th>
+                        <th>締切日</th>
+                        <th>担当者</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="task : ${tasks}">
+                        <td th:text="${task.id}"></td>
+                        <td th:text="${task.title}"></td>
+                        <td th:text="${task.status}"></td>
+                        <td th:text="${task.endDate}"></td>
+                        <td th:text="${task.user.username}"></td>
+                        <td>
+                            <a th:href="@{/tasks/edit/{id}(id=${task.id})}">編集</a>
+                        </td>
+                        <td>
+                            <a th:href="@{/tasks/delete/{id}(id=${task.id})}"
+                                onclick="return confirm('本当に削除しますか？');">削除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>
