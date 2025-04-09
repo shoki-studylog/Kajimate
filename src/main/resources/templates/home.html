@@ -6,103 +6,309 @@
     <title>タスク一覧</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap">
 </head>
 
 <body>
-    <div class="container">
-        <div class="task_list">
-            <div class="todays_task">
-                <h1>今日のタスク一覧</h1>
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>タイトル</th>
-                            <th>ステータス</th>
-                            <th>締切日</th>
-                            <th>担当者</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="todaysTask : ${todaysTasks}">
-                            <td th:text="${todaysTask.id}"></td>
-                            <td th:text="${todaysTask.title}"></td>
-                            <td th:text="${todaysTask.status}"></td>
-                            <td th:text="${todaysTask.endDate}"></td>
-                            <td th:text="${todaysTask.user.username}"></td>
-                            <td>
-                                <a th:href="@{/tasks/edit/{id}(id=${todaysTask.id})}">編集</a>
-                            </td>
-                            <td>
-                                <a th:href="@{/tasks/delete/{id}(id=${todaysTask.id})}"
-                                    onclick="return confirm('本当に削除しますか？');">削除</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="app-title">KajiMate</h1>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-logout">ログアウト</button>
+            </form>
+        </div>
+    </header>
+    <div class="global-search-form">
+        <input type="text" id="titleFilter" placeholder="タイトルで絞り込み">
+        <input type="text" id="assigneeFilter" placeholder="担当者で絞り込み">
+        <input type="date" id="dateFilter" placeholder="締切日で絞り込み">
+    </div>
+
+    <div class="dashboard-container">
+        <!-- 2カラムレイアウト：本日のタスクと期限切れのタスク -->
+        <div class="two-column-container">
+            <!-- 本日のタスク -->
+            <div class="card todays_task">
+                <div class="card-header">
+                    <h2>今日のタスク一覧</h2>
+                </div>
+                <div class="card-body">
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>ステータス</th>
+                                <th>タイトル</th>
+                                <th>担当者</th>
+                                <th>締切日</th>
+                                <th colspan="2">アクション</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="todaysTask : ${todaysTasks}">
+                                <td>
+                                    <span class="status-badge" th:text="${todaysTask.status}"
+                                        th:classappend="${todaysTask.status == '完了' ? 'status-complete' : 
+                                                          (todaysTask.status == '進行中' ? 'status-progress' : 'status-pending')}">
+                                    </span>
+                                </td>
+                                <td th:text="${todaysTask.title}"></td>
+                                <td th:text="${todaysTask.user.username}"></td>
+                                <td th:text="${todaysTask.endDate}"></td>
+                                <td>
+                                    <a class="btn btn-edit" th:href="@{/tasks/edit/{id}(id=${todaysTask.id})}">編集</a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-delete" th:href="@{/tasks/delete/{id}(id=${todaysTask.id})}"
+                                        onclick="return confirm('本当に削除しますか？');">削除</a>
+                                </td>
+                                <td class="title" th:text="${todaysTask.title}"></td>
+                                <td class="assignee" th:text="${todaysTask.user.username}"></td>
+                                <td class="endDate" th:text="${todaysTask.endDate}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="after_task">
-                <h1>期限切れのタスク一覧</h1>
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>タイトル</th>
-                            <th>ステータス</th>
-                            <th>締切日</th>
-                            <th>担当者</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="OverdueTask : ${OverdueTasks}">
-                            <td th:text="${OverdueTask.id}"></td>
-                            <td th:text="${OverdueTask.title}"></td>
-                            <td th:text="${OverdueTask.status}"></td>
-                            <td th:text="${OverdueTask.endDate}"></td>
-                            <td th:text="${OverdueTask.user.username}"></td>
-                            <td>
-                                <a th:href="@{/tasks/edit/{id}(id=${OverdueTask.id})}">編集</a>
-                            </td>
-                            <td>
-                                <a th:href="@{/tasks/delete/{id}(id=${OverdueTask.id})}"
-                                    onclick="return confirm('本当に削除しますか？');">削除</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- 期限切れのタスク -->
+            <div class="card after_task">
+                <div class="card-header">
+                    <h2>期限切れのタスク一覧</h2>
+                </div>
+                <div class="card-body">
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>ステータス</th>
+                                <th>タイトル</th>
+                                <th>担当者</th>
+                                <th>締切日</th>
+                                <th colspan="2">アクション</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="OverdueTask : ${OverdueTasks}">
+                                <td>
+                                    <span class="status-badge" th:text="${OverdueTask.status}"
+                                        th:classappend="${OverdueTask.status == '完了' ? 'status-complete' : 
+                                                          (OverdueTask.status == '進行中' ? 'status-progress' : 'status-pending')}">
+                                    </span>
+                                </td>
+                                <td th:text="${OverdueTask.title}"></td>
+                                <td th:text="${OverdueTask.user.username}"></td>
+                                <td th:text="${OverdueTask.endDate}"></td>
+                                <td>
+                                    <a class="btn btn-edit" th:href="@{/tasks/edit/{id}(id=${OverdueTask.id})}">編集</a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-delete" th:href="@{/tasks/delete/{id}(id=${OverdueTask.id})}"
+                                        onclick="return confirm('本当に削除しますか？');">削除</a>
+                                </td>
+                                <td class="title" th:text="${OverdueTask.title}"></td>
+                                <td class="assignee" th:text="${OverdueTask.user.username}"></td>
+                                <td class="endDate" th:text="${OverdueTask.endDate}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="calender_task">
-            <h1>タスク一覧</h1>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>タイトル</th>
-                        <th>ステータス</th>
-                        <th>締切日</th>
-                        <th>担当者</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="task : ${tasks}">
-                        <td th:text="${task.id}"></td>
-                        <td th:text="${task.title}"></td>
-                        <td th:text="${task.status}"></td>
-                        <td th:text="${task.endDate}"></td>
-                        <td th:text="${task.user.username}"></td>
-                        <td>
-                            <a th:href="@{/tasks/edit/{id}(id=${task.id})}">編集</a>
-                        </td>
-                        <td>
-                            <a th:href="@{/tasks/delete/{id}(id=${task.id})}"
-                                onclick="return confirm('本当に削除しますか？');">削除</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+
+        <!-- 全てのタスク -->
+        <div class="card alltask_container">
+            <div class="card-header">
+                <h2>全てのタスク</h2>
+            </div>
+            <div class="card-body">
+                <table class="task-table">
+                    <thead>
+                        <tr>
+                            <th>ステータス</th>
+                            <th>タイトル</th>
+                            <th>担当者</th>
+                            <th>締切日</th>
+                            <th colspan="2">アクション</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="task : ${tasks}">
+                            <td>
+                                <span class="status-badge" th:text="${task.status}" th:classappend="${task.status == '完了' ? 'status-complete' : 
+                                                      (task.status == '進行中' ? 'status-progress' : 'status-pending')}">
+                                </span>
+                            </td>
+                            <td th:text="${task.title}"></td>
+                            <td th:text="${task.user.username}"></td>
+                            <td th:text="${task.endDate}"></td>
+                            <td>
+                                <a class="btn btn-edit" th:href="@{/tasks/edit/{id}(id=${task.id})}">編集</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-delete" th:href="@{/tasks/delete/{id}(id=${task.id})}"
+                                    onclick="return confirm('本当に削除しますか？');">削除</a>
+                            </td>
+                            <td class="title" th:text="${task.title}"></td>
+                            <td class="assignee" th:text="${task.user.username}"></td>
+                            <td class="endDate" th:text="${task.endDate}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const titleInput = document.getElementById("titleFilter");
+        const assigneeInput = document.getElementById("assigneeFilter");
+        const dateInput = document.getElementById("dateFilter");
+
+        function filterAllTasks() {
+            const titleValue = titleInput.value.toLowerCase();
+            const assigneeValue = assigneeInput.value.toLowerCase();
+            const dateValue = dateInput.value;
+
+            const allRows = document.querySelectorAll("tbody tr"); // 全セクションまとめて取得
+
+            allRows.forEach(row => {
+                const title = row.querySelector(".title")?.textContent.toLowerCase() || "";
+                const assignee = row.querySelector(".assignee")?.textContent.toLowerCase() || "";
+                const endDate = row.querySelector(".endDate")?.textContent || "";
+
+                const matchesTitle = title.includes(titleValue);
+                const matchesAssignee = assignee.includes(assigneeValue);
+                const matchesDate = !dateValue || endDate === dateValue;
+
+                if (matchesTitle && matchesAssignee && matchesDate) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        titleInput.addEventListener("input", filterAllTasks);
+        assigneeInput.addEventListener("input", filterAllTasks);
+        dateInput.addEventListener("change", filterAllTasks);
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchForm = document.querySelector(".global-search-form");
+        const titleInput = document.getElementById("titleFilter");
+        const assigneeInput = document.getElementById("assigneeFilter");
+        const dateInput = document.getElementById("dateFilter");
+
+        // クリアボタンを追加
+        const clearButton = document.createElement("button");
+        clearButton.className = "filter-clear-btn";
+        clearButton.textContent = "フィルターをクリア";
+        clearButton.type = "button";
+        searchForm.appendChild(clearButton);
+
+        // 入力フィールドにフォーカスエフェクトを追加
+        const inputs = [titleInput, assigneeInput, dateInput];
+        inputs.forEach(input => {
+            // フォーカス時のアニメーション
+            input.addEventListener("focus", function () {
+                this.style.transform = "translateY(-2px)";
+            });
+
+            // フォーカスが外れた時
+            input.addEventListener("blur", function () {
+                this.style.transform = "translateY(0)";
+            });
+        });
+
+        function updateFilterCount() {
+            let filterCount = 0;
+
+            if (titleInput.value.trim()) filterCount++;
+            if (assigneeInput.value.trim()) filterCount++;
+            if (dateInput.value) filterCount++;
+
+            if (filterCount > 0) {
+                searchForm.classList.add("has-filters");
+                searchForm.setAttribute("data-filter-count", filterCount);
+                clearButton.classList.add("visible");
+            } else {
+                searchForm.classList.remove("has-filters");
+                clearButton.classList.remove("visible");
+            }
+        }
+
+        function filterAllTasks() {
+            const titleValue = titleInput.value.toLowerCase();
+            const assigneeValue = assigneeInput.value.toLowerCase();
+            const dateValue = dateInput.value;
+
+            const allRows = document.querySelectorAll("tbody tr"); // 全セクションまとめて取得
+
+            allRows.forEach(row => {
+                const title = row.querySelector(".title")?.textContent.toLowerCase() || "";
+                const assignee = row.querySelector(".assignee")?.textContent.toLowerCase() || "";
+                const endDate = row.querySelector(".endDate")?.textContent || "";
+
+                const matchesTitle = title.includes(titleValue);
+                const matchesAssignee = assignee.includes(assigneeValue);
+                const matchesDate = !dateValue || endDate === dateValue;
+
+                if (matchesTitle && matchesAssignee && matchesDate) {
+                    row.style.display = "";
+                    // フィルター一致時のアニメーション
+                    row.style.animation = "highlightRow 1s ease";
+                    setTimeout(() => {
+                        row.style.animation = "";
+                    }, 1000);
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            updateFilterCount();
+        }
+
+        // フィルタークリア機能
+        clearButton.addEventListener("click", function () {
+            titleInput.value = "";
+            assigneeInput.value = "";
+            dateInput.value = "";
+            filterAllTasks();
+
+            // クリア時のアニメーション
+            const allRows = document.querySelectorAll("tbody tr");
+            allRows.forEach(row => {
+                row.style.display = "";
+                row.style.animation = "fadeIn 0.5s ease";
+                setTimeout(() => {
+                    row.style.animation = "";
+                }, 500);
+            });
+        });
+
+        // 入力イベントリスナー
+        titleInput.addEventListener("input", filterAllTasks);
+        assigneeInput.addEventListener("input", filterAllTasks);
+        dateInput.addEventListener("change", filterAllTasks);
+
+        // アニメーションのためのスタイルを追加
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes highlightRow {
+                0% { background-color: rgba(76, 201, 240, 0.3); }
+                100% { background-color: transparent; }
+            }
+            
+            @keyframes fadeIn {
+                0% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初期状態のフィルターカウント更新
+        updateFilterCount();
+    });
+</script>
 
 </html>

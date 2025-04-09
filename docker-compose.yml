@@ -13,6 +13,8 @@ services:
       SPRING_DATASOURCE_USERNAME: app_user
       SPRING_DATASOURCE_PASSWORD: app_password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      LINE_CHANNEL_ACCESS_TOKEN: "wRPxt0Y8kQaf0Lc//FVmYS7yE+2UDSY1fGnuZRbW0jssqvLummnkEUhi8FHpcTiKXrAVXZ7SFGaLqU/WevrJmcvLnXZLo3X23BhirWkFSkHKHldQPtvK2Tzt4sP0BjiTzfngGWT0GL0JM2rBozq70QdB04t89/1O/w1cDnyilFU="
+      LINE_CHANNEL_SECRET: "fdf051315331f872df1ee9e1e031ddd8"
 
   db:
     image: postgres:15

@@ -29,15 +29,20 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    public String requestMethodName(Model model) {
+    public String home(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("todaysTasks", taskRepository.findAllTasksWithEndDateToday());
         model.addAttribute("OverdueTasks", taskRepository.findAllTasksWithEndDateoverdueToday());
         return "home";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/task/new")
-    public String getMethodName(Model model) {
+    public String showNewForm(Model model) {
         model.addAttribute("newTask", new Task());
         model.addAttribute("users", userRepository.findAll());
         return "create_task";

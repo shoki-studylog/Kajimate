@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 無効化（API認証のため）
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/").permitAll() // ログインは誰でもOK
+                        .requestMatchers("/login", "/css/**", "/js/**", "/webhook").permitAll() // ログインは誰でもOK
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated() // それ以外は認証が必要
                 )
@@ -28,7 +28,8 @@ public class SecurityConfig {
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/login?logout")
+
                         .permitAll())
                 .exceptionHandling(exception -> exception
                         .accessDeniedPage("/error_403")); // 403時の遷移先
