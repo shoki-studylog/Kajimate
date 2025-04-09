@@ -73,4 +73,7 @@ Temporary Items
 *Dockerfile*
 *docker-compose*
 
+#sql
+.sql
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
