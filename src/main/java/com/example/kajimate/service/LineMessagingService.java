@@ -1,6 +1,7 @@
 package com.example.kajimate.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +25,7 @@ import com.example.kajimate.entity.User;
 import com.example.kajimate.repository.TaskRepository;
 import com.example.kajimate.repository.UserRepository;
 import com.linecorp.bot.client.LineMessagingClient;
+import com.linecorp.bot.model.PushMessage;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.TextMessage;
 
@@ -168,6 +171,34 @@ public class LineMessagingService {
         TextMessage textMessage = new TextMessage(message);
         ReplyMessage replyMessage = new ReplyMessage(replyToken, List.of(textMessage));
         lineMessagingClient.replyMessage(replyMessage);
+    }
+
+    // @Scheduled(cron = "0 0 7 * * *") // 日本時間7時（= UTC22時）
+    @Scheduled(fixedRate = 60000) // 毎分実行（1分 = 60,000ミリ秒） ※テスト用
+    public void remindTasks() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        List<Task> tasks = taskRepository.findByEndDateAndStatus(tomorrow);
+
+        for (Task task : tasks) {
+            String lineUserId = task.getUser().getLineUserId();
+            if (lineUserId == null || lineUserId.isBlank())
+                continue;
+
+            String message = "🔔【リマインド通知】\n"
+                    + "明日が締切のタスクがあります！\n\n"
+                    + "タスク名：" + task.getTitle() + "\n"
+                    + "締切日：" + task.getEndDate();
+
+            TextMessage textMessage = new TextMessage(message);
+            PushMessage pushMessage = new PushMessage(lineUserId, textMessage);
+
+            lineMessagingClient.pushMessage(pushMessage);
+
+            // リマインド時間を保存（task に `remindTime` フィールドがある前提）
+            task.setRemindTime(LocalDateTime.now());
+            taskRepository.save(task);
+        }
     }
 
 }

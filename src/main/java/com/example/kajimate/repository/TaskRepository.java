@@ -33,4 +33,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("lineUserId") String lineUserId,
             @Param("title") String title);
 
+    @Query("SELECT t FROM Task t JOIN FETCH t.user WHERE t.endDate = :targetDate AND t.status = '未完了'")
+    List<Task> findByEndDateAndStatus(@Param("targetDate") LocalDate targetDate);
+
 }
