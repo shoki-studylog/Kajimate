@@ -10,5 +10,7 @@ import com.example.kajimate.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+    // ユーザーネームからユーザーを特定する。
     Optional<User> findByUsername(String username);
+
 }

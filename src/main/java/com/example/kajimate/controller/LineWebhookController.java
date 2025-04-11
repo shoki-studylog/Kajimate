@@ -27,7 +27,6 @@ public class LineWebhookController {
             LineMessagingService lineMessagingService) {
         this.taskRepository = taskRepository;
         this.taskService = taskService;
-
         this.lineMessagingService = lineMessagingService;
     }
 

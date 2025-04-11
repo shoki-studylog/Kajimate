@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.kajimate.controller.AdminController;
-import com.example.kajimate.controller.AuthController;
 import com.example.kajimate.entity.Task;
 import com.example.kajimate.entity.User;
 import com.example.kajimate.repository.TaskRepository;
@@ -34,7 +33,6 @@ public class LineMessagingService {
 
     private final TaskRepository taskRepository;
 
-    private final AuthController authController;
     private final AdminController adminController;
     private final UserRepository userRepository;
 
@@ -45,10 +43,9 @@ public class LineMessagingService {
     private final LineMessagingClient lineMessagingClient;
 
     public LineMessagingService(LineMessagingClient lineMessagingClient, AdminController adminController,
-            AuthController authController, UserRepository userRepository, TaskRepository taskRepository) {
+            UserRepository userRepository, TaskRepository taskRepository) {
         this.lineMessagingClient = lineMessagingClient;
         this.adminController = adminController;
-        this.authController = authController;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
     }
@@ -180,6 +177,7 @@ public class LineMessagingService {
 
         List<Task> tasks = taskRepository.findByEndDateAndStatus(tomorrow);
 
+        // Taskごとにメッセージを作成してpushする
         for (Task task : tasks) {
             String lineUserId = task.getUser().getLineUserId();
             if (lineUserId == null || lineUserId.isBlank())
